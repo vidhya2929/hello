@@ -1,0 +1,4 @@
+.card{
+  background-color: blue;
+}
+/* a class inside a module is only applicable to that module only */
