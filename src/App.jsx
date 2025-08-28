@@ -1,7 +1,8 @@
-import {useState} from 'react'
+import { useRef, useEffect, useState} from 'react'
 import Card from "./components/Card"
 import Another from "./components/Another"
 import Blog from './components/Blog';
+import Contoller from './components/Contoller';
 
 
 // function increment(){
@@ -48,14 +49,58 @@ import Blog from './components/Blog';
     const changeState = (e) => {     //e is an event ,In it target is the reason for the event to occur. e.target is the select so e.target.value is the state we are selecting
       // console.log(" e.target.value")
       setSelectedState(e.target.value);
-      setSelectedStateCapital(data[e.target.value]); //here we cannot access data.e.target.value   // THIS CAN BE REMOVED FROM HERE FOR 'useEffect' MOVE TO CONST CHANGECAPITAL
+      // setSelectedStateCapital(data[e.target.value]); //here we cannot access data.e.target.value   // THIS CAN BE REMOVED FROM HERE FOR 'useEffect' MOVE TO CONST CHANGECAPITAL
       // we have to give it as like accessing from a python dictionary 
     };
     // It can be done by using another method =>useEffect
+
     const changeCapital = () => {
-      console.log("changeCapital called");            //HERE THE ABOVE CAPITAL SENTENCE REMOVE E. TARGET.VALUE => SELECTEDSTATE 
+      console.log("changeCapital called");            //HERE THE ABOVE CAPITAL SENTENCE REMOVE E. TARGET.VALUE => SELECTEDSTATE
+      setSelectedStateCapital(data[selectedState]) 
     };
-    useEffect(changeCapital, [selectedState]);   // 2 things -; 1) a function, 2) a dependency value  i.e, here when the selectedState changes the changeCapital also changes
+    useEffect(changeCapital, [selectedState]);   // 2 things -; 1) a function, 2) a dependency array  i.e, here when the selectedState changes the changeCapital also changes
+      // When a value inside the 'selectedState' changes 'changeCapital' is called
+
+
+      // Or can be given as an arrow function
+
+      // useEffect( () =>{
+      //   setSelectedStateCapital(data[selectedState]);
+      // }, [selectedState]) ;
+  // hook => useRef() =>special reference variable
+  const facts = {
+    0: "Zero is the first number",
+    1: "1 is after zero"
+  }
+  const numberRef = useRef();
+  const [fact, setFact] = useState();
+  const[loading, setLoading] = useState(false);
+
+
+  const getFact = async() => {
+
+    const number = numberRef.current.value;
+    setLoading(true)
+    const response = await fetch(`http://numbersapi.com/${number}`);  //to fetch the api ,fetch is an asynchronous function,that returns a promise
+    const text = await response.text();
+    console.log(text);
+    setLoading(false);
+    setFact(text);
+    // to wait we give await => to give await we should make the function async
+    // setFact(facts[numberRef.current.value]);
+  }
+
+  if(loading) {
+    return <div>Loading the data from server....</div>
+  }
+
+
+  const loadPosts = async() =>{
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+    const data = await res.text();
+    console.log(data);
+  }
+
 
   return (
   <div>
@@ -81,17 +126,31 @@ import Blog from './components/Blog';
 
   {/* EFFECT */}
   {/* to make change while selecting use onChange */}
-      <select onChange={changeState}> 
+      {/* <select onChange={changeState}> 
         <option value='Kerala'>Kerala</option>
         <option value= 'Karnataka'>Karnataka</option>
         <option value = 'TamilNadu'>TamilNadu</option>
       </select>
       <p>Selected state is :{selectedState}</p>
-      <p>Capital of selected state:{selectedStateCapital}</p>
+      <p>Capital of selected state:{selectedStateCapital}</p> */}
+
+
+      {/* <input type="number" ref={numberRef} placeholder="Enter number"/>
+      <button onClick={getFact}>Get Fact</button>
+      <p>{fact}</p> */}
+
+      {/* <button onClick={loadPosts}>Load</button> */}
+
   </div>
   )
 }
 // HTML can be written inside JavaScript => JSX
 // to use this file outside export
 export default App
-// 
+
+
+// Data provided to the front end are called API (An external service is used to fetch data)
+// JSON => JavaScript Object Notation
+// format of representing the data which is provided by the api =>JSON
+// key should be string in the objects
+// https://jsonplaceholder.typicode.com/posts
